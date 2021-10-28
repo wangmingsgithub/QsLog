@@ -1,4 +1,4 @@
-// Copyright (c) 2013, Razvan Petru
+﻿// Copyright (c) 2013, Razvan Petru
 // All rights reserved.
 
 // Redistribution and use in source and binary forms, with or without modification,
@@ -35,7 +35,7 @@ static const QTextStreamFunction endl = ::endl;
 }
 #endif
 
-const int QsLogging::SizeRotationStrategy::MaxBackupCount = 10;
+const int QsLogging::SizeRotationStrategy::MaxBackupCount = 10000;
 
 QsLogging::RotationStrategy::~RotationStrategy()
 {
@@ -75,7 +75,16 @@ void QsLogging::SizeRotationStrategy::rotate()
     }
 
      // 1. find the last existing backup than can be shifted up
-     const QString logNamePattern = mFileName + QString::fromUtf8(".%1");
+     QString tmpLogNamePattern = mFileName;
+     if(mFileName.endsWith(".log")){
+         int suffixIndex = tmpLogNamePattern.lastIndexOf(".log");
+         tmpLogNamePattern = tmpLogNamePattern.left(tmpLogNamePattern.length()-suffixIndex)+QString::fromUtf8(".%1")+".log";
+     }
+     else
+     {
+         tmpLogNamePattern = tmpLogNamePattern + QString::fromUtf8(".%1");
+     }
+     const QString logNamePattern = tmpLogNamePattern;
      int lastExistingBackupIndex = 0;
      for (int i = 1;i <= mBackupsCount;++i) {
          const QString backupFileName = logNamePattern.arg(i);
